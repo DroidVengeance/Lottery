@@ -1,0 +1,442 @@
+#LegitLand Lottery System
+#By DroidVengeance
+
+#To be added:
+#	Offline winner payout system
+
+
+
+options:
+#Lowest count/chest for pulling the random number
+	lowest: 1
+#Highest count/chest for pulling the random number, eg 150 chests = 150, 200 chests = 200
+	highest: 50
+#How many chests are available to claim? Should be the same as "Highest" setting above.
+	chestRemaining: 50
+#Prefix
+	prefix: &4[&eLottery&4]
+#Cost to enter the lottery and claim a chest
+	lotteryCost: 10
+#This tells the script what side to put the Current Pot sign on the target block. There is a reason for this...
+	potBlockDirection: behind
+#Made this changable incase we adjust the server's worth on diamonds
+	diamondWorth: 1500
+#Pay offline player? Apparently all the players on the server think so
+	payoffline: true
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+#COMMAND BEGIN	
+command /lottery [<text>]:
+	trigger:
+#Warps to the Lottery if not set
+		if arg 1 is not set:
+			make player execute command "/warp lottery"
+#Lottery Help Menu
+		if arg 1 is "help":
+			if player has permission "lottery.use":
+				message "&n{@prefix} Commands"
+				message "/lottery draw"
+				message "/lottery reset"
+				message "/lottery setpot"
+				message "/lottery removepot"
+				message "/lottery winner"
+#See the last winner
+		if arg 1 is "winner":
+			if player has permission "lottery.use":
+				loop {lotteryPayout::*}:
+					message "{@prefix} &aPast Winners - &f%loop-value%"
+				stop
+#Reset the Lottery
+		if arg 1 is "reset":
+			if player has permission "lottery.use":
+				set {lotteryResetGUI.%player%} to true
+				open chest with 1 row named "&c&lRESET &7the Lottery?" to the player 
+				format slot 0 of player with black glass pane named " " to be unstealable
+				format slot 1 of player with black glass pane named " " to be unstealable
+				format slot 2 of player with green glass block named "&aCONFIRM" with lore "&7Are you sure||&7you want to||&7reset the Lottery?" to close then run  [make player execute command "/lotteryresetyes"]
+				format slot 3 of player with black glass pane named " " to be unstealable
+				format slot 4 of player with black glass pane named " " to be unstealable
+				format slot 5 of player with black glass pane named " " to be unstealable
+				format slot 6 of player with red glass block named "&cDECLINE" to close then run  [make player execute command "/lotteryresetno"]
+				format slot 7 of player with black glass pane named " " to be unstealable
+				format slot 8 of player with black glass pane named " " to be unstealable
+#Sets the Pot Sign at /warp lottery
+		if arg 1 is "setpot":
+			if player has permission "lottery.use":
+				set {lotteryPotSign} to target block
+				set block {@potBlockDirection} target block to wall sign
+				set line 1 of block {@potBlockDirection} target block to "&1CURRENT POT"
+				set line 2 of block {@potBlockDirection} {lotteryPotSign} to "&b&l%{lotteryPotAmt}% &0Diamonds"
+				set line 3 of block {@potBlockDirection} {lotteryPotSign} to "$%{lotteryWorth}%"
+				if {lotteryChestRemaining} = 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign} to "&c&l%{lotteryChestRemaining}%&r Chests Avail."
+				if {lotteryChestRemaining} > 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign} to "&a&l%{lotteryChestRemaining}%&r Chests Avail."
+				stop
+#Sets the Pot Sign at spawn
+		if arg 1 is "setpot2":
+			if player has permission "lottery.use":
+				set {lotteryPotSign2} to target block
+				set block {@potBlockDirection} target block to wall sign
+				set line 1 of block {@potBlockDirection} target block to "&1CURRENT POT"
+				set line 2 of block {@potBlockDirection} {lotteryPotSign2} to "&b&l%{lotteryPotAmt}% &0Diamonds"
+				set line 3 of block {@potBlockDirection} {lotteryPotSign2} to "$%{lotteryWorth}%"
+				if {lotteryChestRemaining} = 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign2} to "&c&l%{lotteryChestRemaining}%&r Chests Avail."
+				if {lotteryChestRemaining} > 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign2} to "&a&l%{lotteryChestRemaining}%&r Chests Avail."
+				stop
+#Removes the Pot Sign registered block at /warp lottery
+		if arg 1 is "removepot":
+			if player has permission "lottery.use":
+				delete {lotteryPotSign}
+				message "&aSign 1 removed"
+#Removes the Pot Sign registered block at spawn
+		if arg 1 is "removepot2":
+			if player has permission "lottery.use":
+				delete {lotteryPotSign2}
+				message "&aSign 2 removed"
+#Not used at this time
+		if arg 1 is "bypass":
+			if player has permission "lottery.use":
+				if {lotteryChestBypass.%player%} is not set:
+					set {lotteryChestBypass.%player%} to true
+					message "&eLottery chest bypass is &aENABLED"
+					stop
+				if {lotteryChestBypass.%player%} is true:
+					set {lotteryChestBypass.%player%} to false
+					message "&eLottery chest bypass is &cDISABLED"
+					stop
+				if {lotteryChestBypass.%player%} is false:
+					set {lotteryChestBypass.%player%} to true
+					message "&eLottery chest bypass is &aENABLED"
+					stop
+#Not used at this time
+		if arg 1 is "show":
+			if player has permission "lottery.use":
+				loop {lotteryChests::*}:
+					message "%loop-value%"
+		if arg 1 is "reload":
+			if player has permission "lottery.use":
+				execute console command "/sk reload lottery"
+				message "{@prefix} &aReloaded Successfully"
+				stop
+		if arg 1 is "win":
+			if player is an op:
+				if {lotteryWonGUI.%player%} is false:
+					set {lotteryWonGUI.%player%} to true
+					message "Set to true"
+					stop
+				if {lotteryWonGUI.%player%} is true:
+					set {lotteryWonGUI.%player%} to false
+					message "Set to false"
+					stop
+				else:
+					set {lotteryWonGUI.%player%} to true
+					message "Set to true"
+					stop
+		if arg 1 is "clearwinners":
+			if player is an op:
+				clear {lotteryPayout::*}
+				message "{@prefix} &aWinners list cleared!"
+				stop
+		if arg 1 is "debug":
+			if player is an op:
+				message "%{lotteryChestRemaining}% Chests Remaining"
+				stop
+#COMMANDS END				
+				
+#PLACE BET SYSTEM BEGIN			
+on right click:
+	#set {_lotteryChestLoc} to location of clicked block
+	#if player's name is "DroidVengeance":
+	if clicked block is a chest:
+		if "%region at player%" contains "lottery":
+			if {lotteryChestBypass.%player%} is true:
+				message "&eBrowsing lottery chest contents"
+				stop
+			if block in front of clicked block is wall sign:
+				cancel event
+				message "{@prefix} &cSorry, this chest has already been claimed"
+				stop
+			else:
+				if player has {@lotteryCost} diamonds:
+					cancel event
+					add clicked block to {lotteryResetChests::*}
+					set {lotteryChosenChest.%player%} to clicked block
+					set {lotteryGUI.%player%} to true
+					open chest with 1 row named "&2Place Your Bet?" to the player 
+					format slot 0 of player with black glass pane named " " to be unstealable
+					format slot 1 of player with black glass pane named " " to be unstealable
+					format slot 2 of player with green glass block named "&aYES" to close then run  [make player execute command "/lotteryyes"]
+					format slot 3 of player with black glass pane named " " to be unstealable
+					format slot 4 of player with black glass pane named " " to be unstealable
+					format slot 5 of player with black glass pane named " " to be unstealable
+					format slot 6 of player with red glass block named "&cNO" to close then run  [make player execute command "/lotteryno"]
+					format slot 7 of player with black glass pane named " " to be unstealable
+					format slot 8 of player with black glass pane named " " to be unstealable
+				else:
+					cancel event
+					play mob spawner flames at clicked block
+					push player backwards at speed 0.5
+					play raw sound "random.explode" at player with pitch 5 volume 6
+					message "{@prefix} &cYou need &b{@lotteryCost} Diamonds &cto participate in the Lottery"
+
+				
+command /lotteryyes:
+	trigger:
+		#close player's inventory
+		if {lotteryGUI.%player%} is true:
+			add {lotteryWinnersCircle.%player%} to {lotteryPayout::*}
+			remove {@lotteryCost} diamonds from the player
+			add {@lotteryCost} diamonds to inventory of {lotteryChosenChest.%player%}
+			set {_lotteryChestNum} to line 1 of block above {lotteryChosenChest.%player%}
+			set block in front of {lotteryChosenChest.%player%} to wall sign
+			set line 1 of block in front of {lotteryChosenChest.%player%} to "&2LegitLand Lottery"
+			set line 2 of block in front of {lotteryChosenChest.%player%} to "%player%"
+			set line 3 of block in front of {lotteryChosenChest.%player%} to "Claimed On:"
+			set line 4 of block in front of {lotteryChosenChest.%player%} to "&1&l%now%"
+			delete {lotteryChosenChest.%player%}
+			set {lotteryPotAmt} to {lotteryPotAmt} + {@lotteryCost}
+			set {lotteryCollect} to {lotteryPotAmt}
+			remove 1 from {lotteryChestRemaining}
+			broadcast "{@prefix} &7%player% &aclaimed chest number &d&l%{_lotteryChestNum}%"
+			broadcast "{@prefix} &aThere are currently &f&l%{lotteryChestRemaining}%&a chests available"
+			broadcast "{@prefix} &aClaim your own using &f&l/lottery"
+			set {lotteryWorth} to {@diamondWorth} * {lotteryPotAmt}
+			set {lotteryWorthPayout} to {lotteryWorth}
+			if {lotteryPotSign} is set:
+				set line 2 of block {@potBlockDirection} {lotteryPotSign} to "&b&l%{lotteryPotAmt}% &0Diamonds"
+				set line 3 of block {@potBlockDirection} {lotteryPotSign} to "OR $%{lotteryWorth}%"
+				if {lotteryChestRemaining} = 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign} to "&c&l%{lotteryChestRemaining}%&r Chests Avail."
+				if {lotteryChestRemaining} > 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign} to "&a&l%{lotteryChestRemaining}%&r Chests Avail."
+				set line 2 of block {@potBlockDirection} {lotteryPotSign2} to "&b&l%{lotteryPotAmt}% &0Diamonds"
+				set line 3 of block {@potBlockDirection} {lotteryPotSign2} to "$%{lotteryWorth}%"
+				if {lotteryChestRemaining} = 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign2} to "&c&l%{lotteryChestRemaining}%&r Chests Avail."
+				if {lotteryChestRemaining} > 0:
+					set line 4 of block {@potBlockDirection} {lotteryPotSign2} to "&a&l%{lotteryChestRemaining}%&r Chests Avail."
+				#message "%{_lotteryChestLoc}%"
+			delete {lotteryGUI.%player%}
+			stop					
+command /lotteryno:
+	trigger:
+		if {lotteryGUI.%player%} is true:
+			close player's inventory
+			delete {lotteryGUI.%player%}
+#PLACE BET SYSTEM END
+			
+#RESET THE LOTTERY BEGIN		
+command /lotteryresetyes:
+	trigger:
+		if {lotteryResetGUI.%player%} is true:
+			clear {lotteryPotAmt}
+			set line 2 of block {@potBlockDirection} {lotteryPotSign} to "&c&l0&r Diamonds"
+			set line 3 of block {@potBlockDirection} {lotteryPotSign} to "Worth: &c&l$0.00"
+			set line 4 of block {@potBlockDirection} {lotteryPotSign} to "&a&l{@chestRemaining}&r Chests Avail."
+			set line 2 of block {@potBlockDirection} {lotteryPotSign2} to "&c&l0&r Diamonds"
+			set line 3 of block {@potBlockDirection} {lotteryPotSign2} to "Worth: &c&l$0.00"
+			set line 4 of block {@potBlockDirection} {lotteryPotSign2} to "&a&l{@chestRemaining}&r Chests Avail."
+			set {lotteryChestRemaining} to {@chestRemaining}
+			set blocks in front of {lotteryResetChests::*} to air
+			message "{@prefix} &aPot amount reset to &c0"
+			wait 5 ticks
+			message "{@prefix} &aPot sign &cRESET"
+			wait 5 ticks
+			message "{@prefix} &aChests available has been &cRESET"
+			wait 5 ticks
+			message "{@prefix} &aAll betting signs have been &cREMOVED"
+			wait 5 ticks
+			message "&4&m-------------------------------------"
+			message "{@prefix} &aThe lottery system has been &cRESET&r."
+			delete {lotteryResetGUI.%player%}
+			stop
+								
+command /lotteryresetno:
+	trigger:
+		if {lotteryResetGUI.%player%} is true:
+			close player's inventory
+			delete {lotteryResetGUI.%player%}
+			
+command /lotteryresetconsole:
+	executable by: console
+	trigger:
+		clear {lotteryPotAmt}
+		set line 2 of block {@potBlockDirection} {lotteryPotSign} to "&c&l0&r Diamonds"
+		set line 3 of block {@potBlockDirection} {lotteryPotSign} to "Worth: &c&l$0.00"
+		set line 4 of block {@potBlockDirection} {lotteryPotSign} to "&a&l{@chestRemaining}&r Chests Avail."
+		set line 2 of block {@potBlockDirection} {lotteryPotSign2} to "&c&l0&r Diamonds"
+		set line 3 of block {@potBlockDirection} {lotteryPotSign2} to "Worth: &c&l$0.00"
+		set line 4 of block {@potBlockDirection} {lotteryPotSign2} to "&a&l{@chestRemaining}&r Chests Avail."
+		set {lotteryChestRemaining} to {@chestRemaining}
+		set blocks in front of {lotteryResetChests::*} to air
+		send "{@prefix} &aPot amount reset to &c0" to the console
+		send "{@prefix} &aPot sign &cRESET" to the console
+		send "{@prefix} &aChests available has been &cRESET" to the console
+		send "{@prefix} &aAll betting signs have been &cREMOVED" to the console
+		send "&4&m-------------------------------------" to the console
+		send "{@prefix} &aThe lottery system has been &cRESET&r." to the console
+		delete {lotteryResetGUI.%player%}
+		stop
+#RESET THE LOTTERY END
+			
+#WINNING PAYOUT SYSTEM BEGIN		
+command /lotterywindiamonds:
+	trigger:
+		if {lotteryWonGUI.%player%} is true:
+			message "test"
+			execute console command "/give %player% diamond %{lotteryCollect}%"
+			delete {lotteryResetGUI.%player%}
+			delete {lotteryWonGUI.%player%}
+			stop	
+command /lotterywincash:
+	trigger:
+		if {lotteryWonGUI.%player%} is true:
+			add {lotteryWorthPayout} to the player's balance
+			message "&a$%{lotteryWorth}% was added to your account"
+			delete {lotteryResetGUI.%player%}
+			delete {lotteryWonGUI.%player%}
+			stop
+#WINNING PAYOUT SYSTEM END
+
+#TIMER FOR CHESTS AVAILABLE BEGIN
+every 10 seconds:
+	if {lotteryChestRemaining} <= 0:
+		execute command "/lotterydrawconsole"
+		send "Lottery drawing started: %now%" to the console
+		stop
+		
+command /lotterydrawconsole:
+	trigger:
+		set {_lotteryNum} to random integer between {@lowest} and {@highest}
+		set {lotteryWinningChest} to {_lotteryNum}
+		loop all blocks in region "lottery":
+			if loop-block is chest:
+				if line 1 of block above loop-block is "%{lotteryWinningChest}%":
+					set {lotteryWinningChest} to line 2 of block in front of loop-block parsed as a player
+					if {lotteryWinningChest} is online:
+						set {lotteryWonGUI.%{lotteryWinningChest}%} to true
+						open chest with 1 row named "&2WINNER!" to {lotteryWinningChest}
+						format slot 0 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+						format slot 1 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+						format slot 2 of {lotteryWinningChest} with diamond named "&bDIAMONDS" with lore "&7Would you like||&7diamonds as the||&7reward?" to close then run  [make {lotteryWinningChest} execute command "/lotterywindiamonds"]
+						format slot 3 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+						format slot 4 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+						format slot 5 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+						format slot 6 of {lotteryWinningChest} with paper named "&eCASH" with lore "&7Would you like||&7cash as the||&7reward?" to close then run  [make {lotteryWinningChest} execute command "/lotterywincash"]
+						format slot 7 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+						format slot 8 of {lotteryWinningChest} with black glass pane named " " to be unstealable
+					else:
+						set {lotteryWonGUI.%{lotteryWinningChest}%} to true
+					#if {lotteryWinningChest} is "":
+					#if block in front of loop-block is air:
+						#broadcast "{@prefix} &aNobody won that drawing..."
+						#broadcast "{@prefix} &aTime for a re-draw..."
+						#wait 5 seconds
+						#execute console command "/lotterydrawconsole"
+						#stop
+		#loop all players:
+			#if {lotteryWinningChest} is loop-player:			
+				#set {lotteryWonGUI.%loop-player%} to true
+				#open chest with 1 row named "&2WINNER!" to the loop-player 
+				#format slot 0 of loop-player with black glass pane named " " to be unstealable
+				#format slot 1 of loop-player with black glass pane named " " to be unstealable
+				#format slot 2 of loop-player with diamond named "&bDIAMONDS" with lore "&7Would you like||&7diamonds as the||&7reward?" to close then run  [make loop-player execute command "/lotterywindiamonds"]
+				#format slot 3 of loop-player with black glass pane named " " to be unstealable
+				#format slot 4 of loop-player with black glass pane named " " to be unstealable
+				#format slot 5 of loop-player with black glass pane named " " to be unstealable
+				#format slot 6 of loop-player with paper named "&eCASH" with lore "&7Would you like||&7cash as the||&7reward?" to close then run  [make loop-player execute command "/lotterywincash"]
+				#format slot 7 of loop-player with black glass pane named " " to be unstealable
+				#format slot 8 of loop-player with black glass pane named " " to be unstealable
+			#else:
+				#set {lotteryWonGUI.%{lotteryWinningChest}%} to true
+		broadcast "{@prefix} &2The winning lottery number is... &d&l%{_lotteryNum}%"
+		broadcast " "
+		wait 2 seconds
+		broadcast "{@prefix} &2Congrats to &7&l%{lotteryWinningChest}%!"
+		set {lotteryWinTracker} to {lotteryWinningChest}
+		delete {lotteryWinningChest}
+		wait 6 seconds
+		execute console command "lotteryresetconsole"
+		stop
+	
+#TIMER END	
+
+#PAYOUT OFFLINE PLAYERS BEGIN
+on join:
+	if {lotteryWonGUI.%player%} is true:
+		if player's vanish state is on:
+			wait 5 seconds
+			message "{@prefix} &aYou won the lottery!!!"
+			message "{@prefix} &aBut you can't claim your winnings while vanished..."
+			message "{@prefix} &aYou have 10 seconds to unvanish in order to claim your winnings"
+			wait 10 seconds
+			open chest with 1 row named "&2WINNER!" to the player 
+			format slot 0 of player with black glass pane named " " to be unstealable
+			format slot 1 of player with black glass pane named " " to be unstealable
+			format slot 2 of player with diamond named "&bDIAMONDS" with lore "&7Would you like||&7diamonds as the||&7reward?" to close then run  [make player execute command "/lotterywindiamonds"]
+			format slot 3 of player with black glass pane named " " to be unstealable
+			format slot 4 of player with black glass pane named " " to be unstealable
+			format slot 5 of player with black glass pane named " " to be unstealable
+			format slot 6 of player with paper named "&eCASH" with lore "&7Would you like||&7cash as the||&7reward?" to close then run  [make player execute command "/lotterywincash"]
+			format slot 7 of player with black glass pane named " " to be unstealable
+			format slot 8 of player with black glass pane named " " to be unstealable
+			stop
+		if player's vanish state is off:
+			wait 5 seconds
+			message "{@prefix} &aYou won the Lottery!"
+			message "{@prefix} &aLoading Winner's Screen..."
+			wait 5 seconds
+			open chest with 1 row named "&2WINNER!" to the player 
+			format slot 0 of player with black glass pane named " " to be unstealable
+			format slot 1 of player with black glass pane named " " to be unstealable
+			format slot 2 of player with diamond named "&bDIAMONDS" with lore "&7Would you like||&7diamonds as the||&7reward?" to close then run  [make player execute command "/lotterywindiamonds"]
+			format slot 3 of player with black glass pane named " " to be unstealable
+			format slot 4 of player with black glass pane named " " to be unstealable
+			format slot 5 of player with black glass pane named " " to be unstealable
+			format slot 6 of player with paper named "&eCASH" with lore "&7Would you like||&7cash as the||&7reward?" to close then run  [make player execute command "/lotterywincash"]
+			format slot 7 of player with black glass pane named " " to be unstealable
+			format slot 8 of player with black glass pane named " " to be unstealable
+			stop
+	
