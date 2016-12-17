@@ -1,12 +1,20 @@
-#LegitLand Lottery System
-#By DroidVengeance
+#Name: LegitLand Lottery System
+#By: DroidVengeance
+#Version: 1.7
 
-#To be added:
-#	Offline winner payout system
+#=====================================================================================================
+#Planned Features:
+#=====================================================================================================
+#1.Pay the winner if they were offline during the drawing - ADDED in Version 1.7
+#2.Something else...
+#3.Something else...
+#4.Something else...
+#5.Something else...
+#=====================================================================================================
 
-
-
+#=====================================================================================================
 options:
+#=====================================================================================================
 #Lowest count/chest for pulling the random number
 	lowest: 1
 #Highest count/chest for pulling the random number, eg 150 chests = 150, 200 chests = 200
@@ -23,6 +31,7 @@ options:
 	diamondWorth: 1500
 #Pay offline player? Apparently all the players on the server think so
 	payoffline: true
+#=====================================================================================================
 	
 	
 	
@@ -62,7 +71,10 @@ options:
 	
 	
 	
-	
+
+#=====================================================================================================
+#Code Begins
+#=====================================================================================================
 	
 #COMMAND BEGIN	
 command /lottery [<text>]:
@@ -183,7 +195,8 @@ command /lottery [<text>]:
 			if player is an op:
 				message "%{lotteryChestRemaining}% Chests Remaining"
 				stop
-#COMMANDS END				
+#COMMANDS END	
+#=====================================================================================================			
 				
 #PLACE BET SYSTEM BEGIN			
 on right click:
@@ -266,6 +279,7 @@ command /lotteryno:
 			close player's inventory
 			delete {lotteryGUI.%player%}
 #PLACE BET SYSTEM END
+#=====================================================================================================
 			
 #RESET THE LOTTERY BEGIN		
 command /lotteryresetyes:
@@ -320,6 +334,7 @@ command /lotteryresetconsole:
 		delete {lotteryResetGUI.%player%}
 		stop
 #RESET THE LOTTERY END
+#=====================================================================================================
 			
 #WINNING PAYOUT SYSTEM BEGIN		
 command /lotterywindiamonds:
@@ -339,6 +354,7 @@ command /lotterywincash:
 			delete {lotteryWonGUI.%player%}
 			stop
 #WINNING PAYOUT SYSTEM END
+#=====================================================================================================
 
 #TIMER FOR CHESTS AVAILABLE BEGIN
 every 10 seconds:
@@ -401,7 +417,8 @@ command /lotterydrawconsole:
 		execute console command "lotteryresetconsole"
 		stop
 	
-#TIMER END	
+#TIMER END
+#=====================================================================================================	
 
 #PAYOUT OFFLINE PLAYERS BEGIN
 on join:
@@ -439,4 +456,6 @@ on join:
 			format slot 7 of player with black glass pane named " " to be unstealable
 			format slot 8 of player with black glass pane named " " to be unstealable
 			stop
+	#PAYOUT OFFLINE PLAYERS END
+#=====================================================================================================
 	
