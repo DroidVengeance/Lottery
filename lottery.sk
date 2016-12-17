@@ -5,8 +5,8 @@
 #Planned Features:
 #=====================================================================================================
 #1.Pay the winner if they were offline during the drawing - ADDED in Version 1.7
-#2.Something else...
-#3.Something else...
+#2.Manual update on script load - ADDED in version 1.8
+#3.Update checker from Github - ADDED in version 1.9
 #4.Something else...
 #5.Something else...
 #=====================================================================================================
@@ -31,7 +31,7 @@ options:
 #Pay offline player? Apparently all the players on the server think so
 	payoffline: true
 #Current Version
-	version: 1.8
+	version: 1.9
 #=====================================================================================================
 
 #=====================================================================================================
