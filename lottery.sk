@@ -32,9 +32,13 @@ options:
 #Pay offline player? Apparently all the players on the server think so
 	payoffline: true
 #=====================================================================================================
-	
+
+#=====================================================================================================
+#Version updater from Github
+#=====================================================================================================
 on script load:
-	download from "http://pastebin.com/raw/e2m89qTb" to "plugins/Skript/scripts/lottery.sk"
+	download from "https://github.com/DroidVengeance/lottery/raw/master/lottery.sk" to "plugins/Skript/scripts/lottery.sk"
+#=====================================================================================================
 	
 	
 	
