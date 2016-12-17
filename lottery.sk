@@ -43,7 +43,7 @@ on script load:
 		download from "https://github.com/DroidVengeance/lottery/raw/master/lottery.sk" to "plugins/Skript/scripts/lottery/lottery.sk"
 		
 every 5 seconds:
-	if text from "https://github.com/DroidVengeance/lottery/raw/master/version.txt" is not "{@version}":
+	if integer from "https://github.com/DroidVengeance/lottery/raw/master/version.txt" is not {@version}:
 		delete "plugins/Skript/scripts/lottery/lottery.sk"
 		download from "https://github.com/DroidVengeance/lottery/raw/master/lottery.sk" to "plugins/Skript/scripts/lottery/lottery.sk"
 		wait 5 seconds
