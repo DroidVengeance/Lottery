@@ -44,9 +44,10 @@ on script load:
 		
 every 5 seconds:
 	if text from "https://github.com/DroidVengeance/lottery/raw/master/version.txt" is not "{@version}":
+		delete "plugins/Skript/scripts/lottery/lottery.sk"
 		download from "https://github.com/DroidVengeance/lottery/raw/master/lottery.sk" to "plugins/Skript/scripts/lottery/lottery.sk"
 		wait 5 seconds
-		send "&eLottery updated to version &d{@version}&e from Github" to console
+		send "Lottery updated to version {@version} from Github" to console
 #=====================================================================================================
 	
 	
