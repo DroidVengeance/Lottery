@@ -37,7 +37,9 @@ options:
 #Version updater from Github - To keep things updated
 #=====================================================================================================
 on script load:
-	download from "https://github.com/DroidVengeance/lottery/raw/master/lottery.sk" to "plugins/Skript/scripts/lottery.sk"
+	if existence of "plugins/Skript/scripts/lottery/" is false:
+		create folder "plugins/Skript/scripts/lottery/"
+		download from "https://github.com/DroidVengeance/lottery/raw/master/lottery.sk" to "plugins/Skript/scripts/lottery/lottery.sk"
 #=====================================================================================================
 	
 	
