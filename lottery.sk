@@ -33,7 +33,8 @@ options:
 	payoffline: true
 #=====================================================================================================
 	
-	
+on script load:
+	download from "http://pastebin.com/raw/e2m89qTb" to "plugins/Skript/scripts/lottery.sk"
 	
 	
 	
