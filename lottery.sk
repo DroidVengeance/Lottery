@@ -76,7 +76,7 @@ options:
 #Code Begins
 #=====================================================================================================
 	
-#COMMAND BEGIN	
+#COMMANDS BEGIN	
 command /lottery [<text>]:
 	trigger:
 #Warps to the Lottery if not set
@@ -213,20 +213,26 @@ on right click:
 				stop
 			else:
 				if player has {@lotteryCost} diamonds:
-					cancel event
-					add clicked block to {lotteryResetChests::*}
-					set {lotteryChosenChest.%player%} to clicked block
-					set {lotteryGUI.%player%} to true
-					open chest with 1 row named "&2Place Your Bet?" to the player 
-					format slot 0 of player with black glass pane named " " to be unstealable
-					format slot 1 of player with black glass pane named " " to be unstealable
-					format slot 2 of player with green glass block named "&aYES" to close then run  [make player execute command "/lotteryyes"]
-					format slot 3 of player with black glass pane named " " to be unstealable
-					format slot 4 of player with black glass pane named " " to be unstealable
-					format slot 5 of player with black glass pane named " " to be unstealable
-					format slot 6 of player with red glass block named "&cNO" to close then run  [make player execute command "/lotteryno"]
-					format slot 7 of player with black glass pane named " " to be unstealable
-					format slot 8 of player with black glass pane named " " to be unstealable
+					if player's vanish state is off:
+						cancel event
+						add clicked block to {lotteryResetChests::*}
+						set {lotteryChosenChest.%player%} to clicked block
+						set {lotteryGUI.%player%} to true
+						open chest with 1 row named "&2Place Your Bet?" to the player 
+						format slot 0 of player with black glass pane named " " to be unstealable
+						format slot 1 of player with black glass pane named " " to be unstealable
+						format slot 2 of player with green glass block named "&aYES" to close then run  [make player execute command "/lotteryyes"]
+						format slot 3 of player with black glass pane named " " to be unstealable
+						format slot 4 of player with black glass pane named " " to be unstealable
+						format slot 5 of player with black glass pane named " " to be unstealable
+						format slot 6 of player with red glass block named "&cNO" to close then run  [make player execute command "/lotteryno"]
+						format slot 7 of player with black glass pane named " " to be unstealable
+						format slot 8 of player with black glass pane named " " to be unstealable
+					if player's vanish state is on:
+						cancel event
+						message "{@prefix} &aYou can't place a bet while vanished!"
+						message "{@prefix} &aIt will broadcast that you are online, duh..."
+						stop
 				else:
 					cancel event
 					play mob spawner flames at clicked block
