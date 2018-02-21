@@ -1,15 +1,27 @@
-#Name: LegitLand Lottery System
+#Name: Lottery System
 #By: DroidVengeance
 
 #=====================================================================================================
 #Planned Features:
 #=====================================================================================================
-#1.Pay the winner if they were offline during the drawing - ADDED in Version 1.7
-#2.Manual update on script load - ADDED in version 1.8
-#3.Update checker from Github - ADDED in version 1.9
-#4.Something else...
-#5.Something else...
+#1. Pay the winner if they were offline during the drawing - ADDED in Version 1.7
+#2. Manual update on script load - ADDED in version 1.8
+#3. Update checker from Github - ADDED in version 1.9
+#4. Individual Admin Permissions - ADDED in version 2.0
+#5. Something else...
 #=====================================================================================================
+
+#=====================================================================================================
+#Permissions
+#=====================================================================================================
+# lottery.use - Main permission (All players should have this)
+# lottery.admin.reset - Admin permission to reset the Lottery
+# lottery.admin.setpot - Admin permission to set the Pot Signs at Spawn and /warp Lottery
+# lottery.admin.removepot - Admin permission to remove the Pot Signs at Spawn and /warp Lottery
+# lottery.admin.bypass - Admin permission to view inside lottery chests (Depreciated and no longer used)
+# lottery.admin.show - No longer in use
+# lottery.admin.reload - Admin permission to reload the script using /lottery reload
+# lottery.admin.* - Global admin permission (Covers all the above permissions)
 
 #=====================================================================================================
 options:
@@ -28,10 +40,10 @@ options:
 	potBlockDirection: behind
 #Made this changable incase we adjust the server's worth on diamonds
 	diamondWorth: 1500
-#Pay offline player? Apparently all the players on the server think so
+#Pay offline player?
 	payoffline: true
 #Current Version
-	version: 1.9
+	version: 2.0
 #=====================================================================================================
 
 #=====================================================================================================
@@ -115,7 +127,7 @@ command /lottery [<text>]:
 				stop
 #Reset the Lottery
 		if arg 1 is "reset":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.reset":
 				set {lotteryResetGUI.%player%} to true
 				open chest with 1 row named "&c&lRESET &7the Lottery?" to the player 
 				format slot 0 of player with black glass pane named " " to be unstealable
@@ -129,7 +141,7 @@ command /lottery [<text>]:
 				format slot 8 of player with black glass pane named " " to be unstealable
 #Sets the Pot Sign at /warp lottery
 		if arg 1 is "setpot":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.setpot":
 				set {lotteryPotSign} to target block
 				set block {@potBlockDirection} target block to wall sign
 				set line 1 of block {@potBlockDirection} target block to "&1CURRENT POT"
@@ -142,7 +154,7 @@ command /lottery [<text>]:
 				stop
 #Sets the Pot Sign at spawn
 		if arg 1 is "setpot2":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.setpot":
 				set {lotteryPotSign2} to target block
 				set block {@potBlockDirection} target block to wall sign
 				set line 1 of block {@potBlockDirection} target block to "&1CURRENT POT"
@@ -155,17 +167,17 @@ command /lottery [<text>]:
 				stop
 #Removes the Pot Sign registered block at /warp lottery
 		if arg 1 is "removepot":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.removepot":
 				delete {lotteryPotSign}
 				message "&aSign 1 removed"
 #Removes the Pot Sign registered block at spawn
 		if arg 1 is "removepot2":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.removepot":
 				delete {lotteryPotSign2}
 				message "&aSign 2 removed"
 #Not used at this time
 		if arg 1 is "bypass":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.bypass":
 				if {lotteryChestBypass.%player%} is not set:
 					set {lotteryChestBypass.%player%} to true
 					message "&eLottery chest bypass is &aENABLED"
@@ -180,11 +192,11 @@ command /lottery [<text>]:
 					stop
 #Not used at this time
 		if arg 1 is "show":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.show":
 				loop {lotteryChests::*}:
 					message "%loop-value%"
 		if arg 1 is "reload":
-			if player has permission "lottery.use":
+			if player has permission "lottery.admin.reload":
 				execute console command "/sk reload lottery"
 				message "{@prefix} &aReloaded Successfully"
 				stop
@@ -481,3 +493,4 @@ on join:
 	#PAYOUT OFFLINE PLAYERS END
 #=====================================================================================================
 	
+ 
