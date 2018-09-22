@@ -21,7 +21,7 @@
 # lottery.admin.bypass - Admin permission to view inside lottery chests (Depreciated and no longer used)
 # lottery.admin.show - No longer in use
 # lottery.admin.reload - Admin permission to reload the script using /lottery reload
-# lottery.admin.* - Global admin permission (Covers all the above permissions)
+# lottery.* - Global admin permission (Covers all the above permissions)
 
 #=====================================================================================================
 options:
@@ -228,8 +228,6 @@ command /lottery [<text>]:
 				
 #PLACE BET SYSTEM BEGIN			
 on right click:
-	#set {_lotteryChestLoc} to location of clicked block
-	#if player's name is "DroidVengeance":
 	if clicked block is a chest:
 		if "%region at player%" contains "lottery":
 			if {lotteryChestBypass.%player%} is true:
